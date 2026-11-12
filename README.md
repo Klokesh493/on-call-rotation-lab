@@ -19,6 +19,10 @@ The simulator runs offline, stores no incident state, and never sends a real pag
 
 Run `make verify` with Make and Python 3 installed. The target runs the documented sample through the project CLI. It also runs the existing Python unit tests.
 
+## Business problem
+
+An escalation near a shift change needs a reproducible answer for who receives the page and when secondary coverage is used.
+
 ## Project walkthrough
 
 ```mermaid

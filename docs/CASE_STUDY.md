@@ -2,7 +2,7 @@
 
 ## Business problem
 
-A local simulator for PagerDuty-style primary and secondary escalation using synthetic responders. It makes shift boundaries and acknowledgment timing explicit.
+An escalation near a shift change needs a reproducible answer for who receives the page and when secondary coverage is used.
 
 ## Reproduce the workflow
 
