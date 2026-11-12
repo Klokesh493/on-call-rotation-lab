@@ -4,11 +4,14 @@ A local simulator for PagerDuty-style primary and secondary escalation using syn
 
 ```mermaid
 flowchart LR
-    N0["CLI arguments"]
-    N1["rotation.py"]
-    N2["Select shift coverage at the event boundary and simulate escalation at the deadline."]
-    N3["Result for operator review"]
-    N0 --> N1 --> N2 --> N3
+    A["Shift coverage, incident time, and timeout"]
+    B["Validate shifts and pick primary responder"]
+    C{"Acknowledged by deadline?"}
+    D["Record acknowledgment"]
+    E["Escalate to secondary"]
+    A --> B --> C
+    C -->|Yes| D
+    C -->|No| E
 ```
 
 ## Operational boundaries
