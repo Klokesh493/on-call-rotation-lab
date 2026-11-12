@@ -1,29 +1,12 @@
 # On-call rotation lab
 
-A local simulator for PagerDuty-style primary and secondary escalation using synthetic responders. It makes shift boundaries and acknowledgment timing explicit.
-
-## Quick start
-
-With Python 3.10 or newer:
-
-```sh
-python3 rotation.py --incident 59 --timeout 5 --ack 65
-python3 -m unittest -v
-```
-
-The example pages Alex at minute 59, escalates to Sam at 64, and records acknowledgment at 65. Incidents retain the responders assigned at incident start. An acknowledgment at the deadline suppresses escalation.
-
-The simulator runs offline, stores no incident state, and never sends a real page. Live PagerDuty integration and time zones are outside its scope.
-
-## Local verification
-
-Run `make verify` with Make and Python 3 installed. The target runs the documented sample through the project CLI. It also runs the existing Python unit tests.
-
-## Business problem
-
 An escalation near a shift change needs a reproducible answer for who receives the page and when secondary coverage is used.
 
-## Project walkthrough
+## What I built
+
+I built an offline rotation simulator that validates shift coverage, picks responders at incident start, and traces paging, escalation, and acknowledgment as separate events. An acknowledgment by the deadline prevents escalation.
+
+## How it works
 
 ```mermaid
 flowchart LR
@@ -37,41 +20,39 @@ flowchart LR
     C -->|No| E
 ```
 
-[Architecture and data flow](docs/ARCHITECTURE.md) · [Business problem, demo, and verification](docs/CASE_STUDY.md)
+[Architecture](docs/ARCHITECTURE.md) · [Decision rules and source](docs/RULES.md)
+
+## Tools used
+
+| Tool | Role in this repository |
+| --- | --- |
+| Python | [rotation.py](rotation.py) implements the CLI and decision rules. Uses `argparse` to parse command-line options, `dataclasses` to represent shift assignments. |
+| Make | Runs the documented example and the local `unittest` suite. |
+| Python replay runner | Compares actual stdout with the checked-in baseline fixtures. |
+| Ruff and Bandit | Developer lint and static security checks through `make check`. |
 
 ## Run the project
 
-### Local setup
-
-Run `make verify` with Python 3 and Make installed.
-
-### CLI usage
+Use Python 3.10+ and Make. From the repository root:
 
 ```sh
 python3 rotation.py --incident 59 --timeout 5 --ack 65
 ```
 
-### Replay usage
+The sample pages Alex at minute 59, escalates to Sam at 64, and records Sam's acknowledgment at 65. [Full expected output](examples/Demo%201.stdout.txt)
 
-Run `make replay` to replay the checked-in inputs. The runner compares stdout with the baseline, reports differences, and exits nonzero on regression.
+## Verify the project
 
-[Replay cases](examples/replay-manifest.json) · [Generated report](reports/replay.md) · [Rule implementation](docs/RULES.md)
+```sh
+make verify
+make replay
+```
 
-### Run tests
+`make replay` checks the recorded cases and exits nonzero if the output changes.
+See the [developer guide](docs/DEVELOPMENT.md) for the pinned lint and security tools.
 
-[Verification report](reports/verification.md) · [Business problem, sample behavior, and limitations](docs/CASE_STUDY.md)
+## Operating limits
 
+The CLI uses synthetic shifts and relative minutes. It does not handle time zones or send live pages.
 
-### Limitations
-
-The verification report covers the bundled local examples. See the [case study](docs/CASE_STUDY.md) for project-specific assumptions and operating limits.
-
-## Development and security
-
-See the [developer setup, tool roles, and security checks](docs/DEVELOPMENT.md).
-
-[Local check results](reports/devsecops.md)
-
-## Runbook
-
-[Run, verify, and troubleshoot this project](docs/RUNBOOK.md)
+[Case study](docs/CASE_STUDY.md) · [Operator runbook](docs/RUNBOOK.md) · [Verification report](reports/verification.md)
